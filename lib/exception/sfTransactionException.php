@@ -8,6 +8,6 @@
    *
    * @version   $Revision$ changed by $Author$
    */
-  class sfTransactionException extends rsfException
+  class sfTransactionException extends sfException
   {
   }
