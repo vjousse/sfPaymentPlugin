@@ -26,12 +26,4 @@
      */
     function process ();
 
-    /**
-     * Get the bound transaction object.
-     *
-     * @return  sfTransactionInterface  An object that implements the
-     *                                  rsfTransactionInterface interface.
-     */
-    function getTransaction ();
-
   }

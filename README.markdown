@@ -3,6 +3,7 @@
 ## Requirements
 
 * Symfony 1.2
+* sfWebBrowserPlugin
 
 ## Installation
 
