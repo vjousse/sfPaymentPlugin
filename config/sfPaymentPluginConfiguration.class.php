@@ -12,6 +12,11 @@
   {
 
     /**
+     * @var string
+     */
+    private $_filename;
+
+    /**
      * @var sfTransactionAdapterInterface
      */
     private $_transactionAdapter;
@@ -38,8 +43,25 @@
       if (NULL === $this->_transactionAdapter)
       {
         $transactionAdapterClass   = sfConfig::get('app_transaction_adapter_class', 'sfTransactionAdapterMock');
-        $browserClass              = sfConfig::get('app_transaction_browser_class', 'sfWebBrowserMock');
-        $this->_transactionAdapter = new $transactionAdapterClass(new $browserClass());
+        $browserClass              = sfConfig::get('app_transaction_browser_class', 'sfPaymentWebBrowser');
+        $config                    = sfContext::getInstance()->getConfiguration();
+
+        if ( ! class_exists($browserClass))
+        {
+          $this->_filename = sfConfig::get('sf_cache_dir') . '/sfPaymentPlugin/lib/sfPaymentWebBrowser.php';
+
+          spl_autoload_register(array($this, 'autoloader'));
+
+          if ( ! class_exists($browserClass) && class_exists('sfWebBrowser'))
+          {
+            $filesystem = new sfFilesystem($this->dispatcher);
+
+            $filesystem->copy(sfConfig::get('sf_plugins_dir') . '/sfPaymentPlugin/data/generator/sfPaymentWebBrowser.php', $this->_filename);
+            $filesystem->chmod(array($this->_filename), 0777);
+          }
+        }
+
+        $this->_transactionAdapter = new $transactionAdapterClass(new $browserClass(), sfConfig::get('app_transaction_adapter_config', array()));
       }
 
       return $this->_transactionAdapter;
@@ -83,6 +105,31 @@
       $this->_assertTransactionEvent($arg_event);
 
       $arg_event->setReturnValue($this->getTransactionAdapter()->process($arg_event['transaction']));
+    }
+
+    /**
+     * Custom autoloader for cached version of sfPaymentWebBrowser class file.
+     *
+     * @param   string          $arg_name The name of the class or interface to
+     *                                    load.
+     *
+     * @return  boolean|string  
+     */
+    public function autoloader ($arg_name)
+    {
+      sfContext::getInstance()->getLogger()->crit($arg_name);
+      if ('sfPaymentWebBrowser' === $arg_name)
+      {
+        include $this->_filename;
+
+        $result = class_exists($arg_name);
+      }
+      else
+      {
+        $result = FALSE;
+      }
+
+      return $result;
     }
 
     /**

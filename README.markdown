@@ -3,7 +3,10 @@
 ## Requirements
 
 * Symfony 1.2
-* sfWebBrowserPlugin
+
+## Optional
+
+* [`sfWebBrowserPlugin`](http://www.symfony-project.org/plugins/sfWebBrowserPlugin "Visit the plugin page for the sfWebBrowserPlugin")
 
 ## Installation
 
@@ -11,25 +14,39 @@ During initial development no package file is available. You can install the
 plugin by either downloading the source or adding an `svn:externals` property to
 your working copy.
 
-Download:
+**Download**:
+
     $ svn checkout http://svn.symfony-project.com/sfPaymentPlugin/branches/1.2-marijn
 
-SVN:
+**SVN**:
+
     $ svn propset externals sfPaymentPlugin http://svn.symfony-project.com/sfPaymentPlugin/branches/1.2-marijn
 
 ## Usage
 
-This plugin acts as a base plugin for different payment system implementations.
+This plugin acts as a base plugin for different payment system implementations:
+
+* `sfPaymentIdealMolliePlugin`
 
 ### Configuration
 
-The following configuration values are available.
+The following configuration values are available in `app.yml`:
 
     [yml]
     all:
       transaction:
         adapter_class: 'sfTransactionAdapterMock'
-        browser_class: 'sfWebBrowserMock'
+        browser_class: 'sfPaymentWebBrowser'
+
+Because of the usage of the event system the plugin is highly customizable.
+Besides listening for the events that are used for preparing, requesting and
+processing the transactions you can also use a more lightweight custom browser
+implementation in favor of the default `sfWebBrowserPlugin`. Just make sure your
+class implements the `sfWebBrowserInterface`. The default `sfPaymentWebBrowser`
+class is just a type extension of the default `sfWebBrowser` class from the
+`sfWebBrowserPlugin` that implements the `sfWebBrowserInterface`. In case you 
+don't define it yourself it is created by the plugin for you, within the cache
+directory of your project.
 
 ### Events
 
