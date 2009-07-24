@@ -1,21 +1,20 @@
 <?php
 
+/**
+ * sfPaymentPlugin configuration.
+ * 
+ * @package   sfPaymentPlugin
+ * @category  Library
+ * @author    Marijn Huizendveld <marijn@round84.com>
+ *
+ * @version   $Revision$ changed by $Author$
+ */
+class sfPaymentPluginConfiguration extends sfPluginConfiguration
+{
   /**
-   * sfPaymentPlugin configuration.
-   * 
-   * @package   sfPaymentPlugin
-   * @author    Marijn Huizendveld <marijn@round84.com>
-   *
-   * @version   $Revision$ changed by $Author$
+   * @see sfPluginConfiguration
    */
-  class sfPaymentPluginConfiguration extends sfPluginConfiguration
+  public function initialize ()
   {
-
-    /**
-     * @see sfPluginConfiguration
-     */
-    public function initialize ()
-    {
-    }
-
   }
+}

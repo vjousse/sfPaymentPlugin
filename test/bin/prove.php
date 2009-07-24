@@ -1,4 +1,13 @@
 <?php
+/**
+ * sfPaymentPlugin configuration.
+ * 
+ * @package   sfPaymentPlugin
+ * @category  Library
+ * @author    Marijn Huizendveld <marijn@round84.com>
+ *
+ * @version   $Revision$ changed by $Author$
+ */
 
 include dirname(__FILE__).'/../bootstrap/unit.php';
 

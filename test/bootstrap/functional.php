@@ -1,21 +1,23 @@
 <?php
 
+/*
+ * This file is part of the symfony package.
+ * (c) 2004-2006 Fabien Potencier <fabien.potencier@symfony-project.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+// guess current application
 if (!isset($app))
 {
-  $app = 'FrontEnd';
+  $app = 'frontend';
 }
 
-require_once $_SERVER['SYMFONY'].'/autoload/sfCoreAutoload.class.php';
-sfCoreAutoload::register();
-
-function sfPaymentPlugin_cleanup()
-{
-  sfToolkit::clearDirectory(dirname(__FILE__).'/../fixtures/project/cache');
-  sfToolkit::clearDirectory(dirname(__FILE__).'/../fixtures/project/log');
-}
-sfPaymentPlugin_cleanup();
-register_shutdown_function('sfPaymentPlugin_cleanup');
-
-require_once dirname(__FILE__).'/../fixtures/project/config/ProjectConfiguration.class.php';
+// load project configuration for specified $app
+require_once dirname(__FILE__).'/../../../../config/ProjectConfiguration.class.php';
 $configuration = ProjectConfiguration::getApplicationConfiguration($app, 'test', isset($debug) ? $debug : true);
 sfContext::createInstance($configuration);
+
+// remove all cache
+sfToolkit::clearDirectory(sfConfig::get('sf_app_cache_dir'));

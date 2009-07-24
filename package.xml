@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.4.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+  <name>sfPaymentPlugin</name>
+  <channel>pear.symfony-project.com</channel>
+  <summary>
+    A set of plugins to ease online payment implementation.
+  </summary>
+  <description>
+    The sfPaymentPlugin intends to bring a standard, flexible and maintainable solution for managing online payments using the symfony framework throughout a set of plugins.
+  </description>
+  <lead>
+    <name>Antoine Leclercq</name>
+    <user>antoine.leclercq</user>
+    <email>antoine.leclercq@letscod.com</email>
+    <active>yes</active>
+  </lead>
+  <developer>
+    <name>Johnny Lattouf</name>
+    <user>johnny.lattouf</user>
+    <email>johnny.lattouf@letscod.com</email>
+    <active>yes</active>
+  </developer>
+  <developer>
+    <name>Marijn Huizendveld</name>
+    <user>marijn</user>
+    <email>marijn@round84.com</email>
+    <active>yes</active>
+  </developer>
+  <developer>
+    <name>Md Emran Hasan</name>
+    <user>phpfour</user>
+    <email>phpfour@gmail.com</email>
+    <active>yes</active>
+  </developer>
+  <date>2009-07-24</date>
+  <version>
+    <release>0.1.0</release>
+    <api>0.1.0</api>
+  </version>
+  <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+  </stability>
+  <license uri="http://www.symfony-project.com/license">
+    MIT license
+  </license>
+  <notes>This is the first version of the plugin. It is NOT READY for production yet (i.e alpha state).</notes>
+ 
+  <contents>
+    <dir name="/">
+      <file role="data" name="README" />
+      <file role="data" name="LICENSE" />
+      <file role="data" name="package.xml" />
+      <dir name="config">      
+        <file role="data" name="sfPaymentPluginConfiguration.class.php" />
+      </dir>
+	    <dir name="lib">
+	      <dir name="helper">
+	        <file role="data" name="PaymentHelper.php" />
+	      </dir>
+	      <file role="data" name="sfPaymentGatewayInterface.class.php" />
+        <file role="data" name="sfPaymentMockGatewayInterface.class.php" />
+        <file role="data" name="sfPaymentTransaction.class.php" />
+	    </dir>
+	    <dir name="test">
+        <dir name="bin">
+          <file role="data" name="prove.php" />
+        </dir>
+		    <dir name="bootstrap">
+          <file role="data" name="functional.php" />
+          <file role="data" name="unit.php" />
+		    </dir>
+		    <dir name="functional" />
+        <dir name="unit">
+          <file role="data" name="TransactionTest.php" />
+        </dir>
+	    </dir>
+		</dir>
+ </contents>
+ 
+  <dependencies>
+	   <required>
+	    <php>
+	      <min>5.0.0</min>
+	    </php>
+	    <pearinstaller>
+	      <min>1.4.1</min>
+	    </pearinstaller>
+	    <package>
+	      <name>symfony</name>
+	      <channel>pear.symfony-project.com</channel>
+	      <min>1.2.0</min>
+	      <max>1.3.0</max>
+	      <exclude>1.3.0</exclude>
+	    </package>
+	  </required>
+  </dependencies>
+ 
+  <phprelease>
+  </phprelease>
+ 
+<changelog>
+  <release>
+    <version>
+      <release>0.1.0</release>
+      <api>0.1.0</api>
+    </version>
+    <stability>
+      <release>alpha</release>
+      <api>alpha</api>
+    </stability>
+    <license uri="http://www.symfony-project.com/license">
+      MIT license
+    </license>
+    <date>2009-07-24</date>
+    <license>MIT</license>
+    <notes>This is the first version of the plugin. It is NOT READY for production yet (i.e alpha state).</notes>
+  </release>
+</changelog>
+
+</package>
