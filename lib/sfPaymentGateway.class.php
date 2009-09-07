@@ -8,6 +8,7 @@
  *
  * @package     sfPaymentGateway
  * @category    Library
+ * @author      Giuseppe Castelluzzo <g.castelluzzo@gmail.com>
  * @author      Md Emran Hasan <phpfour@gmail.com>
  * @author      Johnny Lattouf <johnny.lattouf@letscod.com>
  * @author      Antoine Leclercq <antoine.leclercq@letscod.com>
