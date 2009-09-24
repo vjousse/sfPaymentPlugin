@@ -42,14 +42,6 @@ abstract class PluginsfPaymentTransaction extends BasesfPaymentTransaction
     }
   }
 
-  public static function getPaymentClass($obj) {
-    if(!($obj instanceof sfPaymentTransaction)) return NULL;
-    switch($obj->_get('type')) {
-      case self::PAYPAL:
-        return 'sfPaymentPayPal';
-    }
-  }
-
   /**
    * Get cartClass set on configuration file
    *
@@ -97,20 +89,63 @@ abstract class PluginsfPaymentTransaction extends BasesfPaymentTransaction
    */
   protected $fields = array();
 
+  public function getGatewayUrl() {
+    return $this->gatewayUrl;
+  }
+
+  protected function setGatewayUrl($url) {
+    $this->gatewayUrl = $url;
+  }
+
   /**
-   * Returns fields
+   * Return fields array
    *
    * @return array
    */
-  public function getFields()
-  {
+  public function getFields() {
     return $this->fields;
   }
 
+  /**
+   * Add fields array
+   *
+   * @param array
+   * @return none
+   */
   protected function setFields($fields) {
     foreach($fields as $key => $value) {
       $this->fields[$key] = $value;
     }
+  }
+
+  /**
+   * Get transaction's currency (ex. USD)
+   *
+   * @param none
+   * @return string
+   */
+  public function getCurrency() {
+    return $this->getField('currency');
+  }
+
+  /**
+   * Set the value of currency.
+   *
+   * @param      string
+   * @return     none
+   */
+  public function setCurrency($currency) {
+    $this->setField('currency', $currency);
+  }
+
+  /**
+   * Set amount for shipping
+   *
+   * @param float
+   * @return none
+   */
+  public function setShipping($amount) {
+    $this->setField('shipping', $amount);
   }
 
   /**
@@ -124,6 +159,26 @@ abstract class PluginsfPaymentTransaction extends BasesfPaymentTransaction
       return $this->_get('type').$this->getField('reference');
 
     return $this->_get('reference');
+  }
+
+  /**
+   * Get transaction's date
+   *
+   * @param none
+   * @return timestamp
+   */
+  public function getDate() {
+    return $this->_get('date');
+  }
+
+  /**
+   * Get transaction's status
+   *
+   * @param none
+   * @return string
+   */
+  public function getStatus() {
+    return $this->_get('status');
   }
 
   /**
@@ -169,14 +224,6 @@ abstract class PluginsfPaymentTransaction extends BasesfPaymentTransaction
 
   public function setParams($params) {
     $this->setFields(unserialize($params));
-  }
-
-  public function getGatewayUrl() {
-    return $this->gatewayUrl;
-  }
-
-  protected function setGatewayUrl($url) {
-    $this->gatewayUrl = $url;
   }
 
   /**

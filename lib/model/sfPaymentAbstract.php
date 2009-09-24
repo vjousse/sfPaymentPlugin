@@ -19,62 +19,6 @@ abstract class sfPaymentAbstract extends sfPaymentTransaction {
   abstract protected function validateNotification();
 
   /**
-   * Return value of field
-   *
-   * @param string
-   * @return mixed
-   */
-  abstract function getField($name);
-
-  abstract function setField($name, $value);
-
-  /**
-   * Get transaction's date
-   *
-   * @param none
-   * @return timestamp (format???)
-   */
-  abstract function getDate();
-
-  /**
-   * Get transaction's status
-   *
-   * @param none
-   * @return string
-   */
-  abstract function getStatus();
-
-  /**
-   * Get transaction's currency (ex. USD)
-   *
-   * @param none
-   * @return string
-   */
-  public function getCurrency() {
-    return $this->getField('currency');
-  }
-
-  /**
-   * Set the value of currency.
-   *
-   * @param      string
-   * @return     none
-   */
-  public function setCurrency($currency) {
-    $this->setField('currency', $currency);
-  }
-
-  /**
-   * Set amount for shipping
-   *
-   * @param float
-   * @return none
-   */
-  public function setShipping($amount) {
-    $this->setField('shipping', $amount);
-  }
-
-  /**
    * Set product (use this for single item)
    *
    * @param reference
@@ -103,12 +47,29 @@ abstract class sfPaymentAbstract extends sfPaymentTransaction {
   abstract function getItem();
 
   /**
-   * Get Cart (use this for multiple items)
+   * Get Item(s) Cart
    *
    * @param none
    * @return sfPaymentCartInterface
    */
   abstract function getCart();
+
+  /**
+   * Return value of field
+   *
+   * @param string
+   * @return mixed
+   */
+  abstract function getField($name);
+
+  /**
+   * Set value for field $name
+   *
+   * @param string
+   * @param mixed
+   * @return none
+   */
+  abstract function setField($name, $value);
 
 }
 
