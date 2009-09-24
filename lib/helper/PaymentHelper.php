@@ -16,11 +16,11 @@
  * @param Gateway $gateway
  * @return the html of the form to process the payment
  */
-function payment_form_tag_for($gateway) {
+function payment_form_for($transaction) {
 	$html  = "<form method=\"POST\" name=\"gateway_form\" ";
-	$html .= "action=\"" . $gateway->gatewayUrl . "\">\n";
+	$html .= "action=\"" . $transaction->getGatewayUrl() . "\">\n";
 
-	foreach ($gateway->getFields() as $name => $value)
+	foreach ($transaction->getFields() as $name => $value)
 	{
 		$html .= "<input type=\"hidden\" name=\"$name\" value=\"$value\"/>\n";
 	}

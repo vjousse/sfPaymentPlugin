@@ -1,0 +1,25 @@
+sfPaymentTransaction:
+  columns:
+    reference:
+      type: string(255)
+      primary: true
+    type:
+      type: string(20)
+      notnull: true
+    date:
+      type: timestamp
+      notnull: true
+    status:
+      type: string(20)
+      notnull: true
+    vendor:
+      type: string(255)
+      notnull: true
+    buyer:
+      type: string(255)
+      notnull: true
+    total_amount:
+      type: string(20)
+    params:
+      type: clob
+      notnull: true
