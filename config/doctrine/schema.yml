@@ -1,4 +1,4 @@
-sfPaymentTransaction:
+sfPaymentDoctrineStorage:
   columns:
     reference:
       type: string(255)

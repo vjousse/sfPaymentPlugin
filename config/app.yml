@@ -1,0 +1,5 @@
+all:
+  #sfPaymentPlugin
+  sf_payment_plugin:
+    #cartClass:        #name of cart's class
+    #itemClass:        #name of item's class
