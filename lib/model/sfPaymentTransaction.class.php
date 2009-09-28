@@ -15,7 +15,8 @@
  * @version     $Revision$ changed by $Author$
  */
 
-class sfPaymentTransaction {
+class sfPaymentTransaction
+{
 
   const TRANSACTION_COMPLETED = 'Completed';
   const TRANSACTION_PENDING = 'Pending';
@@ -29,42 +30,26 @@ class sfPaymentTransaction {
   const DOCTRINE_STORAGE = 'Doctrine';
 
   /**
-   * Initialize the plugin by configuration file
-   *
-   * @param none
-   * @return none
-   */
-  public static function init() {
-    $cart_class = sfConfig::get('app_sf_payment_plugin_cartClass');
-    if($cart_class) {
-      $class = new ReflectionClass($cart_class);
-      if (!$class->implementsInterface(sfPaymentCartInterface))
-        throw new sfException($class->getName().' must implement sfPaymentCartInterface');
-
-      sfPaymentTransaction::$CART_CLASS = $cart_class;
-    }
-
-    $item_class = sfConfig::get('app_sf_payment_plugin_itemClass');
-    if($item_class) {
-      $class = new ReflectionClass($item_class);
-      if (!$class->implementsInterface(sfPaymentItemInterface))
-        throw new sfException($class->getName().' must implement sfPaymentItemInterface');
-
-      sfPaymentTransaction::$ITEM_CLASS = $item_class;
-    }
-  }
-
-  /**
    * Get cartClass set on configuration file
    *
    * @param none
    * @return string
    */
-  private static function getCartClass() {
-    if(!sfPaymentTransaction::$CART_CLASS)
+  public static function getCartClass()
+  {
+    $cart_class = sfConfig::get('app_sf_payment_plugin_cart_class');
+    if($cart_class)
+    {
+      $class = new ReflectionClass($cart_class);
+      if (!$class->implementsInterface('sfPaymentCartInterface'))
+        throw new sfException($class->getName().' must implement sfPaymentCartInterface');
+    }
+    else
+    {
       throw new sfException('Class for cart not found. Did you declare it in configuration?');
+    }
 
-    return sfPaymentTransaction::$CART_CLASS;
+    return $cart_class;
   }
 
   /**
@@ -73,28 +58,46 @@ class sfPaymentTransaction {
    * @param none
    * @return string
    */
-  private static function getItemClass() {
-    if(!sfPaymentTransaction::$ITEM_CLASS)
+  public static function getItemClass()
+  {
+    $item_class = sfConfig::get('app_sf_payment_plugin_item_class');
+    if($item_class)
+    {
+      $class = new ReflectionClass($item_class);
+      if (!$class->implementsInterface('sfPaymentItemInterface'))
+        throw new sfException($class->getName().' must implement sfPaymentItemInterface');
+    }
+    else
+    {
       throw new sfException('Class for item not found. Did you declare it in configuration?');
+    }
 
-    return sfPaymentTransaction::$ITEM_CLASS;
+    return $item_class;
   }
 
   /**
-   * PaymentGateway
+   * sfPaymentGateway
    *
-   * @var sfPaymentAbstractGateway
+   * @var sfPaymentGateway
    */
   private $gateway;
 
   /**
-   * PaymentStorage
+   * sfPaymentStorageInterface
    *
-   * @var sfPaymentStorageInterface
+   * @var string
    */
-  private $storage;
+  private $storage_name;
 
-  function __construct($gateway_name = NULL, $storage_name = NULL){
+  /**
+   * is validated
+   *
+   * @var boolean
+   */
+  private $is_validated;
+
+  function __construct($gateway_name = null, $storage_name = null)
+  {
     if($gateway_name) $this->setPaymentGateway($gateway_name);
     if($storage_name) $this->setPaymentStorage($storage_name);
   }
@@ -105,10 +108,12 @@ class sfPaymentTransaction {
    * @param string
    * @return none
    */
-  public function setPaymentGateway($gateway_name) {
-    switch($gateway_name) {
+  public function setPaymentGateway($gateway_name)
+  {
+    switch($gateway_name)
+    {
       case self::PAYPAL:
-        $gateway_class = 'sfPaymentPayPalGateway';
+        $gateway_class = 'sfPaymentGatewayPayPal';
         break;
       default:
         throw new Exception('Unknow gateway');
@@ -122,15 +127,16 @@ class sfPaymentTransaction {
    * @param string
    * @return none
    */
-  public function setPaymentStorage($storage_name) {
-    switch($storage_name) {
+  public function setPaymentStorage($storage_name)
+  {
+    switch($storage_name)
+    {
       case self::DOCTRINE_STORAGE:
-        $storage_class = 'sfPaymentDoctrineStorageTable';
+        break;
       default:
         throw new Exception('Unknow storage');
     }
-
-    $this->storage = new $storage_class();
+    $this->storage_name = $storage_name;
   }
 
   /**
@@ -139,7 +145,8 @@ class sfPaymentTransaction {
    * @param none
    * @return sfPaymentAbstractGateway
    */
-  public function getGateway() {
+  public function getGateway()
+  {
     return $this->gateway;
   }
 
@@ -149,7 +156,8 @@ class sfPaymentTransaction {
    * @param sfPaymentAbstractGateway
    * @return none
    */
-  public function setGateway(sfPaymentAbstractGateway $gateway) {
+  public function setGateway(sfPaymentGateway $gateway)
+  {
     $this->gateway = $gateway;
   }
 
@@ -159,7 +167,8 @@ class sfPaymentTransaction {
    * @param sfPaymentStorageInterface
    * @return none
    */
-  public function setStorage(sfPaymentStorageInterface $storage) {
+  public function setStorage(sfPaymentStorageInterface $storage)
+  {
     $this->storage = $storage;
   }
 
@@ -169,7 +178,8 @@ class sfPaymentTransaction {
    * @param none
    * @return url
    */
-  public function getGatewayUrl() {
+  public function getGatewayUrl()
+  {
     return $this->gateway->getUrl();
   }
 
@@ -178,7 +188,8 @@ class sfPaymentTransaction {
    *
    * @return array
    */
-  public function getFields() {
+  public function getFields()
+  {
     return $this->gateway->getFields();
   }
 
@@ -188,7 +199,8 @@ class sfPaymentTransaction {
    * @param none
    * @return string
    */
-  public function getCurrency() {
+  public function getCurrency()
+  {
     return $this->gateway->getCurrency();
   }
 
@@ -198,7 +210,8 @@ class sfPaymentTransaction {
    * @param      string
    * @return     none
    */
-  public function setCurrency($currency) {
+  public function setCurrency($currency)
+  {
     $this->gateway->setCurrency($currency);
   }
 
@@ -208,7 +221,8 @@ class sfPaymentTransaction {
    * @param float
    * @return none
    */
-  public function setShipping($amount) {
+  public function setShipping($amount)
+  {
     $this->gateway->setShipping($amount);
   }
 
@@ -218,12 +232,14 @@ class sfPaymentTransaction {
    * @param none
    * @return string
    */
-  public function getReference() {
+  public function getReference()
+  {
     return $this->gateway->getReference();
   }
 
-  public function getType() {
-    $this->gateway->getType();
+  public function getType()
+  {
+    return $this->gateway->getType();
   }
 
   /**
@@ -232,7 +248,8 @@ class sfPaymentTransaction {
    * @param none
    * @return timestamp
    */
-  public function getDate() {
+  public function getDate()
+  {
     return $this->gateway->getDate();
   }
 
@@ -242,7 +259,8 @@ class sfPaymentTransaction {
    * @param none
    * @return string
    */
-  public function getStatus() {
+  public function getStatus()
+  {
     return $this->gateway->getStatus();
   }
 
@@ -252,7 +270,8 @@ class sfPaymentTransaction {
    * @param none
    * @return string
    */
-  public function getBuyer() {
+  public function getBuyer()
+  {
     return $this->gateway->getBuyer();
   }
 
@@ -262,7 +281,8 @@ class sfPaymentTransaction {
    * @param none
    * @return string
    */
-  public function getVendor() {
+  public function getVendor()
+  {
     return $this->gateway->getVendor();
   }
 
@@ -272,60 +292,9 @@ class sfPaymentTransaction {
    * @param none
    * @return string
    */
-  public function getTotalAmount(){
-    return $this->gateway->getTotalAmount();
-  }
-
-  /**
-   * Set product (use this for single item)
-   *
-   * @param reference
-   * @param name
-   * @param amount
-   * @param quantity
-   */
-  public function setProduct($reference, $name, $amount, $quantity = 1) {
-    $this->gateway->setProduct($reference, $name, $amount, $quantity);
-  }
-
-  /**
-   * Add product (use this for multiple items)
-   *
-   * @param reference
-   * @param name
-   * @param amount
-   * @param quantity
-   */
-  public function addProduct($reference, $name, $amount, $quantity = 1) {
-    $this->gateway->addProduct($reference, $name, $amount, $quantity);
-  }
-
-  /**
-   * Set product by item to fields (for single item)
-   *
-   * @param item (sfPaymentItemInterface)
-   */
-  public function setProductByItem(sfPaymentItemInterface $item) {
-    $this->setProduct(
-      $item.getReference(),
-      $item.getName(),
-      $item.getPrice(),
-      $item.getQuantity
-    );
-  }
-
-  /**
-   * Add product by item to fields (for multiple items)
-   *
-   * @param item (sfPaymentItemInterface)
-   */
-  public function addProductByItem(sfPaymentItemInterface $item) {
-    $this->addProduct(
-      $item.getReference(),
-      $item.getName(),
-      $item.getPrice(),
-      $item.getQuantity
-    );
+  public function getTotalAmount()
+  {
+    return $this->gateway->getTotalAmount().' '.$this->gateway->getCurrency();
   }
 
   /**
@@ -334,7 +303,8 @@ class sfPaymentTransaction {
    * @param none
    * @return sfPaymentItemInterface
    */
-  public function getItem() {
+  public function getItem()
+  {
     return $this->gateway->getItem();
   }
 
@@ -344,18 +314,82 @@ class sfPaymentTransaction {
    * @param none
    * @return sfPaymentCartInterface
    */
-  public function getCart() {
+  public function getCart()
+  {
     return $this->gateway->getCart();
   }
 
   /**
-   * Add products contents in cart to fields (for multiple items)
+   * Set product (use this for single item)
    *
-   * @param cart
+   * @param mixed
+   * @param string
+   * @param float
+   * @param int
+   * @return none
    */
-  public function setCart(sfPaymentCartInterface $cart) {
-    foreach($cart->getItems as $item) {
-      $this->addProductByItem($item);
+  public function setProduct($reference, $name, $amount, $quantity = 1)
+  {
+    $this->gateway->setProduct($reference, $name, $amount, $quantity);
+  }
+
+  /**
+   * Set product by item (use this for single item)
+   *
+   * @param sfPaymentItemInterface
+   * @return none
+   */
+  public function setItem(sfPaymentItemInterface $item)
+  {
+    $this->setProduct(
+      $item->getReference(),
+      $item->getName(),
+      $item->getPrice(),
+      $item->getQuantity()
+    );
+  }
+
+  /**
+   * Add product (use this for multiple items)
+   *
+   * @param mixed
+   * @param string
+   * @param float
+   * @param int
+   * @return none
+   */
+  public function addProduct($reference, $name, $amount, $quantity = 1)
+  {
+    $this->gateway->addProduct($reference, $name, $amount, $quantity);
+  }
+
+  /**
+   * Add product by item (use this for multiple items)
+   *
+   * @param sfPaymentItemInterface
+   * @return none
+   */
+  public function addItem(sfPaymentItemInterface $item)
+  {
+    $this->addProduct(
+      $item->getReference(),
+      $item->getName(),
+      $item->getPrice(),
+      $item->getQuantity()
+    );
+  }
+
+  /**
+   * Add products contents in cart (for multiple items)
+   *
+   * @param sfPaymentCartInterface
+   * @return none
+   */
+  public function setCart(sfPaymentCartInterface $cart)
+  {
+    foreach($cart->getItems() as $item)
+    {
+      $this->addItem($item);
     }
   }
 
@@ -365,8 +399,9 @@ class sfPaymentTransaction {
    * @param array
    * @return none
    */
-  public function setValidationFields($fields) {
-    $this->gateway->setValidationFields();
+  public function setValidationFields($fields)
+  {
+    $this->gateway->setValidationFields($fields);
   }
 
   /**
@@ -375,7 +410,10 @@ class sfPaymentTransaction {
    * @param none
    * @return boolean
    */
-  public function validateNotification() {
+  public function validateNotification()
+  {
+    $this->is_validated = true;
+
     return $this->gateway->validateNotification();
   }
 
@@ -385,13 +423,23 @@ class sfPaymentTransaction {
    * @param none
    * @return boolean
    */
-  public function save() {
-    if(!$this->storage)
+  public function save()
+  {
+    if(!$this->is_validated)
+    {
+      throw new Exception("Can't save unvalidated transaction");
+    }
+    if(!$this->storage_name)
+    {
       throw new Exception("Storage not declared");
+    }
 
-    return $storage->saveTransaction($this);
+    switch($this->storage_name)
+    {
+      case self::DOCTRINE_STORAGE:
+        return Doctrine::getTable('sfPaymentDoctrineStorage')->saveTransaction($this);
+    }
   }
 
 }
-sfPaymentTransaction::init();
 ?>

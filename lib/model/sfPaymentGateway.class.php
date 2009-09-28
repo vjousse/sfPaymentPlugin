@@ -16,7 +16,8 @@
  * @version     $Revision$ changed by $Author$
  */
 
-abstract class sfPaymentAbstractGateway {
+abstract class sfPaymentGateway
+{
 
   /**
    * Payment gateway URL
@@ -45,7 +46,8 @@ abstract class sfPaymentAbstractGateway {
    * @param none
    * @return string
    */
-  public function getUrl() {
+  public function getUrl()
+  {
     return $this->url;
   }
 
@@ -55,7 +57,8 @@ abstract class sfPaymentAbstractGateway {
    * @param string
    * @return none
    */
-  protected function setUrl($url) {
+  protected function setUrl($url)
+  {
     $this->url = $url;
   }
 
@@ -64,7 +67,8 @@ abstract class sfPaymentAbstractGateway {
    *
    * @return array
    */
-  public function getFields() {
+  public function getFields()
+  {
     return $this->fields;
   }
 
@@ -74,19 +78,24 @@ abstract class sfPaymentAbstractGateway {
    * @param array
    * @return none
    */
-  protected function setFields($fields) {
-    foreach($fields as $key => $value) {
+  protected function setFields($fields)
+  {
+    foreach($fields as $key => $value)
+    {
       $this->fields[$key] = $value;
     }
   }
 
   /**
-   * Set validation fields received from PayPal
+   * Set validation fields
    *
    * @param array
    * @return none
    */
-  abstract function setValidationFields($fields);
+  public function setValidationFields($fields)
+  {
+    $this->fields = $fields;
+  }
 
   /**
    * Validate the notification
@@ -164,8 +173,9 @@ abstract class sfPaymentAbstractGateway {
    * @param string
    * @return mixed
    */
-  public function getField($name) {
-    $fieldName = $this->transaleField($name);
+  public function getField($name)
+  {
+    $fieldName = $this->translateField($name);
     if($fieldName) return $this->fields[$fieldName];
 
     throw new sfException('No field\'s translaction for  '.$name.'.');
@@ -178,7 +188,8 @@ abstract class sfPaymentAbstractGateway {
    * @param mixed
    * @return none
    */
-  public function setField($name, $value) {
+  public function setField($name, $value)
+  {
     $fieldName = $this->translateField($name);
     if($fieldName) return $this->fields[$fieldName] = $value;
 
@@ -193,7 +204,8 @@ abstract class sfPaymentAbstractGateway {
    * @param $name
    * @param $arguments
    */
-  public function __call($name, array $arguments) {
+  public function __call($name, array $arguments)
+  {
     // parse name
     if(preg_match('/(get|set)([a-zA-Z]+)/', $name, $matches))
     {

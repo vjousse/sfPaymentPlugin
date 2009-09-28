@@ -12,9 +12,10 @@
  * @version     $Revision$ changed by $Author$
  */
 
-interface sfPaymentStorageInterface {
+interface sfPaymentStorageInterface
+{
 
-  public function getTransaction($reference);
+  public function getTransaction($type, $reference);
 
   public function saveTransaction(sfPaymentTransaction $transaction);
 

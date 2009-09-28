@@ -1,22 +1,24 @@
 sfPaymentDoctrineStorage:
   columns:
     reference:
-      type: string(255)
+      type: string(50)
       primary: true
+      notnull: true
     type:
       type: string(20)
+      primary: true
       notnull: true
     date:
       type: timestamp
       notnull: true
     status:
-      type: string(20)
+      type: string(15)
       notnull: true
     vendor:
-      type: string(255)
+      type: string(100)
       notnull: true
     buyer:
-      type: string(255)
+      type: string(100)
       notnull: true
     total_amount:
       type: string(20)

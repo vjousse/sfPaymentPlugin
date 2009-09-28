@@ -14,17 +14,22 @@
 
 class PluginsfPaymentDoctrineStorageTable extends Doctrine_Table implements sfPaymentStorageInterface
 {
-  public function getTransaction($reference) {
-    $storage = $this->createQuery('t')->Where('t.reference = ?', $reference)->fetchOne();
+  public function getTransaction($type, $reference)
+  {
+    $storage = Doctrine_Query::create()
+      ->from('sfPaymentDoctrineStorage s')
+      ->Where('s.reference = ?', $reference)
+      ->andWhere('s.type = ?', $type)
+      ->fetchOne();
 
-    $transaction = new sfPaymentTransaction();
+    $transaction = new sfPaymentTransaction(NULL, sfPaymentTransaction::DOCTRINE_STORAGE);
     $transaction->setGateway(unserialize($storage->getParams()));
-    $transaction->setStorage($storage);
 
     return $transaction;
   }
 
-  public function saveTransaction(sfPaymentTransaction $transaction) {
+  public function saveTransaction(sfPaymentTransaction $transaction)
+  {
     $storage = new sfPaymentDoctrineStorage();
     $storage->setReference($transaction->getReference());
     $storage->setType($transaction->getType());
