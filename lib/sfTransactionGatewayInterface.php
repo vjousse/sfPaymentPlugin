@@ -1,14 +1,14 @@
 <?php
 
   /**
-   * Interface for handling transactions.
+   * Interface for gateway implementations.
    * 
    * @package   sfPaymentPlugin
    * @author    Marijn Huizendveld <marijn@round84.com>
    *
    * @version   $Revision$ changed by $Author$
    */
-  interface sfTransactionAdapterInterface
+  interface sfTransactionGatewayInterface
   {
 
     /**
