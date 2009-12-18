@@ -2,7 +2,7 @@
 
   /**
    * sfPaymentPlugin configuration.
-   * 
+   *
    * @package   sfPaymentPlugin
    * @author    Marijn Huizendveld <marijn@round84.com>
    *
@@ -12,59 +12,51 @@
   {
 
     /**
-     * @var string
+     * @var sfServiceContainerInterface
      */
-    private $_filename;
+    private $_serviceContainer;
 
     /**
-     * @var sfTransactionAdapterInterface
-     */
-    private $_transactionAdapter;
-
-    /**
-     * Plugin initialization.
+     * Plugin setup.
+     *
+     * @uses    sfServiceContainerAutoloader
      *
      * @return  void
      */
-    public function initialize ()
+    public function setup ()
     {
+      if ( ! class_exists('sfServiceContainerAutoloader', FALSE))
+      {
+        require_once __DIR__ . '/../lib/vendor/Symfony/DependencyInjection/sfServiceContainerAutoloader.php';
+
+        sfServiceContainerAutoloader::register();
+      }
+
+      $this->dispatcher->connect('component.method_not_found', array($this, 'onComponentMethodNotFound'));
       $this->dispatcher->connect('transaction.prepare', array($this, 'onTransactionPrepare'));
       $this->dispatcher->connect('transaction.request', array($this, 'onTransactionRequest'));
       $this->dispatcher->connect('transaction.process', array($this, 'onTransactionProcess'));
     }
 
     /**
-     * Get the transaction adapter.
+     * Hook for the component.method_not_found event.
      *
-     * @return  sfTransactionAdapterInterface A transaction adapter implementation.
+     * @param   sfEvent $arg_event  The event that caused invocation of the hook.
+     *
+     * @return  boolean             Indicator whether a hook was found or not.
      */
-    public function getTransactionAdapter ()
+    public function onComponentMethodNotFound (sfEvent $arg_event)
     {
-      if (NULL === $this->_transactionAdapter)
+      $result = FALSE;
+
+      if ('getServiceContainer' === $arg_event['method'])
       {
-        $transactionAdapterClass   = sfConfig::get('app_transaction_adapter_class', 'sfTransactionAdapterMock');
-        $browserClass              = sfConfig::get('app_transaction_browser_class', 'sfPaymentWebBrowser');
-        $config                    = sfContext::getInstance()->getConfiguration();
+        $arg_event->setReturnValue($this->getServiceContainer());
 
-        if ( ! class_exists($browserClass))
-        {
-          $this->_filename = sfConfig::get('sf_cache_dir') . '/sfPaymentPlugin/lib/sfPaymentWebBrowser.php';
-
-          spl_autoload_register(array($this, 'autoloader'));
-
-          if ( ! class_exists($browserClass) && class_exists('sfWebBrowser'))
-          {
-            $filesystem = new sfFilesystem($this->dispatcher);
-
-            $filesystem->copy(sfConfig::get('sf_plugins_dir') . '/sfPaymentPlugin/data/generator/sfPaymentWebBrowser.php', $this->_filename);
-            $filesystem->chmod(array($this->_filename), 0777);
-          }
-        }
-
-        $this->_transactionAdapter = new $transactionAdapterClass(new $browserClass(), sfConfig::get('app_transaction_adapter_config', array()));
+        $result = TRUE;
       }
 
-      return $this->_transactionAdapter;
+      return $result;
     }
 
     /**
@@ -76,7 +68,8 @@
      */
     public function onTransactionPrepare (sfEvent $arg_event)
     {
-      $arg_event->setReturnValue($this->getTransactionAdapter()->prepare());
+      $arg_event->setReturnValue($this->getTransactionGateway($arg_event['gateway'])
+                                      ->prepare());
     }
 
     /**
@@ -88,9 +81,10 @@
      */
     public function onTransactionRequest (sfEvent $arg_event)
     {
-      $this->_assertTransactionEvent($arg_event);
+      $this->_assertTransaction($arg_event);
 
-      $arg_event->setReturnValue($this->getTransactionAdapter()->request($arg_event['transaction']));
+      $arg_event->setReturnValue($this->getTransactionGateway($arg_event['gateway'])
+                                      ->request($arg_event['transaction']));
     }
 
     /**
@@ -102,38 +96,46 @@
      */
     public function onTransactionProcess (sfEvent $arg_event)
     {
-      $this->_assertTransactionEvent($arg_event);
+      $this->_assertTransaction($arg_event);
 
-      $arg_event->setReturnValue($this->getTransactionAdapter()->process($arg_event['transaction']));
+      $arg_event->setReturnValue($this->getTransactionGateway($arg_event['gateway'])
+                                      ->process($arg_event['transaction']));
     }
 
     /**
-     * Custom autoloader for cached version of sfPaymentWebBrowser class file.
+     * Get the transaction gateway.
      *
-     * @param   string          $arg_name The name of the class or interface to
-     *                                    load.
+     * @param   string                        $arg_gateway  The name of the gateway.
      *
-     * @return  boolean|string  
+     * @return  sfTransactionGatewayInterface
      */
-    public function autoloader ($arg_name)
+    public function getTransactionGateway ($arg_gateway)
     {
-      sfContext::getInstance()->getLogger()->crit($arg_name);
-      if ('sfPaymentWebBrowser' === $arg_name)
-      {
-        include $this->_filename;
-
-        $result = class_exists($arg_name);
-      }
-      else
-      {
-        $result = FALSE;
-      }
-
-      return $result;
+      return $this->getServiceContainer()
+                  ->getService('payment.gateway.' . $arg_gateway);
     }
 
     /**
-     * Event listener for transaction.process event.
+     * Get the service container that describes the payment gateways.
+     *
+     * @return  sfServiceContainerInterface
+     */
+    public function getServiceContainer ()
+    {
+      if (NULL === $this->_serviceContainer)
+      {
+        $paths = array_merge(array($this->configuration->getRootDir() . '/config')
+                            ,array_filter($this->configuration->getPluginPaths()
+                                         ,array($this, '_isPaymentPlugin')));
+
+        $this->_serviceContainer = $this->_loadServiceDescriptions($paths);
+      }
+
+      return $this->_serviceContainer;
+    }
+
+    /**
+     * Assert if a transaction object was sent along with the event.
      *
      * @param   sfEvent                 $arg_event  Event object.
      *
@@ -141,12 +143,59 @@
      *
      * return   void
      */
-    private function _assertTransactionEvent (sfEvent $arg_event)
+    private function _assertTransaction (sfEvent $arg_event)
     {
-      if ( ! isset($arg_event['transaction']) || $arg_event['transaction'] instanceof rsfTransactionInterface)
+      if ( ! isset($arg_event['transaction']) || ! $arg_event['transaction'] instanceof sfTransactionInterface)
       {
-        throw new sfTransactionException('You should pass a rsfTransactionInterface implementation along with the event.');
+        throw new InvalidArgumentException('You should pass a sfTransactionInterface implementation along with the event.');
       }
+    }
+
+    /**
+     * Assert if a gateway was sent along with the event.
+     *
+     * @param   sfEvent                 $arg_event  Event object.
+     *
+     * @throws  sfTransactionException              In case no transaction implementation was passed along with the event.
+     *
+     * return   void
+     */
+    private function _assertGateway (sfEvent $arg_event)
+    {
+      if ( ! isset($arg_event['gateway']) || ! is_string($arg_event['gateway']))
+      {
+        throw new InvalidArgumentException('You should pass a reference to a registered gateway along with the event.');
+      }
+    }
+
+    /**
+     * Load the service descriptions for the transaction gateways.
+     *
+     * @param   array                      $arg_paths
+     *
+     * @return  sfServiceContainerInterface
+     */
+    private function _loadServiceDescriptions (array $arg_paths)
+    {
+      $builder     = new sfServiceContainerBuilder();
+      $loader      = new sfServiceContainerLoaderFileXml($builder, $arg_paths);
+      $environment = method_exists($this->configuration, 'getEnvironment') ? $this->configuration->getEnvironment() : 'cli';
+
+      $loader->load('payment_services_' . $environment . '.xml');
+
+      return $builder;
+    }
+
+    /**
+     * Check if a path leads to a payment plugin
+     *
+     * @param   string  $arg_path The path to the plugin.
+     *
+     * @return  boolean
+     */
+    private function _isPaymentPlugin ($arg_path)
+    {
+      return (bool) FALSE !== strpos($arg_path, 'sfPayment');
     }
 
   }
