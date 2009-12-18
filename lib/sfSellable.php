@@ -10,4 +10,19 @@
    */
   interface sfSellable
   {
+
+    /**
+     * Get the currency.
+     *
+     * @return  string
+     */
+    function getCurrency ();
+
+    /**
+     * Get the amount.
+     *
+     * @return  integer
+     */
+    function getAmount ();
+
   }
