@@ -46,6 +46,22 @@
     const CURRENCY_UNITED_STATES_DOLLAR = 'USD';
 
     /**
+     * Set the transaction id.
+     *
+     * @param   string  $arg_transactionId  The transaction id.
+     *
+     * @return  void
+     */
+    function setTransactionId ($arg_transactionId);
+
+    /**
+     * Get the transaction id.
+     *
+     * @return  string  The transaction id.
+     */
+    function getTransactionId ();
+
+    /**
      * Get the amount for the transaction.
      *
      * @return  integer The amount for the transaction in cents.
@@ -108,5 +124,23 @@
      * @return  void
      */
     function setDescription ($arg_description);
+
+    /**
+     * Check the amount requested.
+     *
+     * @param   integer $arg_amount The amount returned by mollie.
+     *
+     * @return  void
+     */
+    function checkAmount ($arg_amount);
+
+    /**
+     * Check the currency requested.
+     *
+     * @param   integer $arg_currency The amount currency by mollie.
+     *
+     * @return  void
+     */
+    function checkCurrency ($arg_currency);
 
   }
