@@ -8,7 +8,7 @@
    *
    * @version   $Revision$ changed by $Author$
    */
-  interface sfTransactionInterface extends sfSellable
+  interface sfPaymentTransactionInterface extends sfPaymentSellable
   {
 
     /**

@@ -1,14 +1,14 @@
 <?php
 
   /**
-   * Base class for sfTransactionInterface implementations.
+   * Base class for sfPaymentTransactionInterface implementations.
    * 
    * @package   sfPaymentPlugin
    * @author    Marijn Huizendveld <marijn@round84.com>
    *
-   * @version   $Revision: 20146 $ changed by $Author: marijn $
+   * @version   $Revision$ changed by $Author$
    */
-  class sfTransaction implements sfTransactionInterface
+  class sfPaymentTransaction implements sfPaymentTransactionInterface
   {
 
     /**
@@ -234,7 +234,7 @@
     /**
      * Create an object from an XML node.
      *
-     * @param   string  $arg_xmlElement The XML representation.
+     * @param   SimpleXMLElement  $arg_xmlElement The XML representation.
      *
      * @return  void
      */
