@@ -25,4 +25,11 @@
      */
     function getAmount ();
 
+    /**
+     * Get the description for the transaction.
+     *
+     * @return  string  The description for the transaction.
+     */
+    function getDescription ();
+
   }

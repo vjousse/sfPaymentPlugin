@@ -1,7 +1,7 @@
 <?php
 
   /**
-   * General transaction implementation.
+   * Base class for sfTransactionInterface implementations.
    * 
    * @package   sfPaymentPlugin
    * @author    Marijn Huizendveld <marijn@round84.com>
@@ -201,7 +201,7 @@
     {
       if ($this->_amount !== (int) $arg_amount)
       {
-        throw new sfTransactionException(sprintf('Amount returned by gateway %d doesn\'t match requested amount %d.', $arg_amount, $this->_amount));
+        throw new sfTransactionException(sprintf('Amount returned by gateway "%d" doesn\'t match requested amount "%d".', $arg_amount, $this->_amount));
       }
     }
 
@@ -216,8 +216,65 @@
     {
       if ($this->_currency !== $arg_currency)
       {
-        throw new sfTransactionException(sprintf('Currency returned by gateway %s doesn\'t match requested currency %s.', $arg_currency, $this->_currency));
+        throw new sfTransactionException(sprintf('Currency returned by gateway "%s" doesn\'t match requested currency "%s".', $arg_currency, $this->_currency));
       }
+    }
+
+    /**
+     * Cast the object to an XML notation.
+     *
+     * @return  DomDocument
+     */
+    public function toXmlElement ()
+    {
+      return sprintf("<transaction%s>\n  <!-- test -->\n</transaction>"
+                    ,$this->_getTransactionNodeAttributes() ?: '');
+    }
+
+    /**
+     * Create an object from an XML node.
+     *
+     * @param   string  $arg_xmlElement The XML representation.
+     *
+     * @return  void
+     */
+    public function fromXmlElement (SimpleXMLElement $arg_xmlElement)
+    {
+      $attributes = $arg_xmlElement->attributes;
+
+      foreach ($attributes as $key => $value)
+      {
+        if (NULL !== $value)
+        {
+          $method = 'set' . ucfirst($key);
+
+          $this->$method($value);
+        }
+      }
+    }
+
+    /**
+     * Get the XML attributes for the transaction node.
+     *
+     * @return  string
+     */
+    private function _getTransactionNodeAttributes ()
+    {
+      $fields     = array('transactionId', 'status');
+      $attributes = array();
+
+      foreach ($fields as $fieldName)
+      {
+        $method = 'get' . ucfirst($fieldName);
+        $value  = $this->$method();
+
+        if (NULL !== $value)
+        {
+          $attributes[] = $fieldName . '="' . $value . '"';
+        }
+      }
+
+      return implode(' ', $attributes);
     }
 
   }
