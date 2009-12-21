@@ -12,6 +12,13 @@
   {
 
     /**
+     * Check if the gateway accepts a specific currency.
+     *
+     * @return  boolean
+     */
+    function canAcceptCurrency ($arg_currency);
+
+    /**
      * Prepare the transaction.
      *
      * @return  void
