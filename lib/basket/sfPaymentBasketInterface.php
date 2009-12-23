@@ -8,7 +8,7 @@
    *
    * @version   $Revision$ changed by $Author$
    */
-  interface sfPaymentBasketInterface extends sfSellable
+  interface sfPaymentBasketInterface extends sfPaymentSellable
   {
 
     /**
@@ -36,7 +36,7 @@
      *
      * @return  integer                   The key for the sellable in the basket.
      */
-    function addSellable (sfSellable $arg_sellable);
+    function addSellable (sfPaymentSellable $arg_sellable);
 
     /**
      * Remove a sellable from the basket at the specified key.
@@ -49,5 +49,12 @@
      *                                for the specified key.
      */
     function removeSellableAtKey ($arg_key);
+
+    /**
+     * Get an array representation for the Sellables
+     *
+     * @return  array
+     */
+    function toArray ();
 
   }

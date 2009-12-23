@@ -6,7 +6,7 @@
    * @package   sfPaymentPlugin
    * @author    Marijn Huizendveld <marijn@round84.com>
    *
-   * @version   $Revision: 20173 $ changed by $Author: marijn $
+   * @version   $Revision$ changed by $Author$
    */
   abstract class sfPaymentFormAbstract extends sfForm
   {
@@ -22,15 +22,20 @@
     private $_gateways;
 
     /**
-     * @var array The sellable objects.
+     * @var sfPaymentBasketInterface  The basket containing all the objects on sale.
      */
-    private $_sellables;
+    private $_basket;
+
+    /**
+     * @var string  The currency of the bundled sellables.
+     */
+    private $_currency;
 
     /**
      * Payment form constructor.
      *
-     * @param   array                   $arg_gateways     The available gateways.
-     * @param   string                  $arg_csrfSecret   The CSRF Secret.
+     * @param   array                     $arg_gateways     The available gateways.
+     * @param   string                    $arg_csrfSecret   The CSRF Secret.
      *
      * @return  void
      */
@@ -38,16 +43,21 @@
     {
       $this->setDefaults(array());
 
-      $this->options         = array();
-      $this->_sellables      = array();
-      $this->_gateways       = array_filter($arg_gateways, array($this, '_filterGateway'));
-      $this->widgetSchema    = new sfWidgetFormSchema(array('gateway'        => new sfWidgetFormChoice(array('choices' => $this->_gateways))
-                                                           ,'transaction_id' => new sfWidgetFormInputHidden()
-                                                           ));
-      $this->validatorSchema = new sfValidatorSchema(array('gateway'        => new sfValidatorChoice(array('choices' => array_keys($this->_gateways)))
-                                                          ,'transaction_id' => new sfValidatorPass()
+      $this->options   = array();
+      $this->_gateways = array_filter($arg_gateways, array($this, '_filterGateway'));
+
+      $this->widgetSchema = new sfWidgetFormSchema(array('transaction_id' => new sfWidgetFormInputHidden()
+                                                        ,'gateway'        => new sfWidgetFormChoice(array('choices' => $this->_gateways))
+                                                        ,'selection'      => new sfWidgetFormChoice(array('expanded' => TRUE
+                                                                                                         ,'choices'  => NULL))
+                                                        ));
+
+      $this->validatorSchema = new sfValidatorSchema(array('transaction_id' => new sfValidatorPass()
+                                                          ,'gateway'        => new sfValidatorChoice(array('choices' => array_keys($this->_gateways)))
+                                                          ,'selection'      => new sfValidatorChoice(array('choices' => NULL))
                                                           ));
-      $this->errorSchema     = new sfValidatorErrorSchema($this->validatorSchema);
+
+      $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 
       $this->widgetSchema->setNameFormat('payment[%s]');
 
@@ -59,19 +69,87 @@
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @throws  BadMethodCallException  If no transaction was set for the form.
+     * @throws  BadMethodCallException  If no basket was set for the form.
+     */
+    public function bind (array $taintedValues = NULL, array $taintedFiles = NULL)
+    {
+      if (NULL === $this->_transaction)
+      {
+        throw new BadMethodCallException(sprintf('Cannot bind the "%s" form to the request because no transaction object was set', get_class($this)));
+      }
+      else if (NULL === $this->_basket)
+      {
+        throw new BadMethodCallException(sprintf('Cannot bind the "%s" form to the request because no basket object was set', get_class($this)));
+      }
+
+      parent::bind($taintedValues, $taintedFiles);
+    }
+
+    /**
+     * Call this method to update the form defaults to reflect changes in the
+     * bound transaction and basket objects.
+     *
+     * @return  sfPaymentFormAbstract                     The object itself to support a fluent interface.
+     */
+    public function updateFormDefaults ()
+    {
+      if ($this->hasBasket())
+      {
+        $this->_updateChoiceField($this->widgetSchema['selection'], $this->getBasket()->toArray());
+      }
+
+      return $this;
+    }
+
+    /**
+     * Update a choice field.
+     *
+     * @return
+     */
+    private function _updateChoiceField (sfWidgetFormChoice $arg_widget, array $arg_options)
+    {
+      $arg_widget->setOption('choices', $arg_options);
+    }
+
+    /**
      * Set the transaction object.
      *
      * @param   sfTransactionInterface  $arg_transaction  The transaction object to use.
      *
      * @return  sfPaymentFormAbstract                     The object itself to support a fluent interface.
      */
-    public function setTransaction (sfTransactionInterface $arg_transaction)
+    public function setTransaction (sfPaymentTransactionInterface $arg_transaction)
     {
+      if ($this->hasTransaction())
+      {
+        throw new BadMethodCallException(sprintf('Cannot set the transaction object on this "%s" form instance because one is already set.', get_class($this)));
+      }
+
       $this->_transaction = $arg_transaction;
 
-      //TODO: update relevant default values of the form
+      return $this->updateFormDefaults();
+    }
 
-      return $this;
+    /**
+     * Set the basket for the form.
+     *
+     * @param   sfPaymentBasketInterface  $arg_gateways     The available gateways.
+     *
+     * @return  sfPaymentFormAbstract                     The object itself to support a fluent interface.
+     */
+    public function setBasket (sfPaymentBasketInterface $arg_basket)
+    {
+      if ($this->hasBasket())
+      {
+        throw new BadMethodCallException(sprintf('Cannot set the basket object on this "%s" form instance because one is already set.', get_class($this)));
+      }
+
+      $this->_basket = $arg_basket;
+
+      return $this->updateFormDefaults();
     }
 
     /**
@@ -79,7 +157,7 @@
      *
      * @throws  BadMethodCallException  When no transaction object is associated with the form.
      *
-     * @return  sfTransactionInterface
+     * @return  sfPaymentTransactionInterface
      */
     public function getTransaction ()
     {
@@ -89,6 +167,23 @@
       }
 
       return $this->_transaction;
+    }
+
+    /**
+     * Get the bound basket object.
+     *
+     * @throws  BadMethodCallException  When no basket object is associated with the form.
+     *
+     * @return  sfPaymentBasketInterface
+     */
+    public function getBasket ()
+    {
+      if ( ! $this->hasBasket())
+      {
+        throw new BadMethodCallException(sprintf('Cannot get basket object because there is no object bound to this "$s" form instance.', get_class($this)));
+      }
+
+      return $this->_basket;
     }
 
     /**
@@ -102,32 +197,13 @@
     }
 
     /**
-     * Set the transaction object.
+     * Check if the form has a basket object attached to it.
      *
-     * @return  sfPaymentFormAbstract                     The object itself to support a fluent interface.
+     * @return  boolean
      */
-    public function setSellables (array $arg_sellables)
+    public function hasBasket ()
     {
-      $this->_sellables = array_filter($arg_sellables, array($this, '_filterSellable'));
-
-      //TODO: update relevant default values of the form
-
-      return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws  BadMethodCallException  If no transaction was set for the form.
-     */
-    public function bind (array $taintedValues = NULL, array $taintedFiles = NULL)
-    {
-      if (NULL === $this->_transaction)
-      {
-        throw new BadMethodCallException(sprintf('Cannot bind the "%s" form to the request because no transaction object was set.', get_class($this)));
-      }
-
-      parent::bind($taintedValues, $taintedFiles);
+      return NULL !== $this->_basket;
     }
 
     /**
@@ -137,21 +213,9 @@
      *
      * @return  boolean
      */
-    private function _filterGateway (sfTransactionGatewayInterface $arg_gateway = NULL)
+    private function _filterGateway (sfPaymentTransactionGatewayInterface $arg_gateway = NULL)
     {
-      return NULL !== $arg_gateway;
-    }
-
-    /**
-     * Filter the sellables.
-     *
-     * @param   sfSellable $arg_sellable  A sellable implementation.
-     *
-     * @return  boolean
-     */
-    private function _filterSellable (sfSellable $arg_sellable = NULL)
-    {
-      return NULL !== $arg_sellable;
+      return NULL !== $arg_gateway && $arg_gateway->isEnabled();
     }
 
   }

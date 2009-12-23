@@ -1,20 +1,25 @@
 <?php
 
   /**
-   * sfTransactionGatewayAbstract
+   * sfPaymentTransactionGatewayAbstract
    * 
    * @package   sfPaymentPlugin
    * @author    Marijn Huizendveld <marijn@round84.com>
    *
    * @version   $Revision$ changed by $Author$
    */
-  abstract class sfTransactionGatewayAbstract implements sfTransactionGatewayInterface
+  abstract class sfPaymentTransactionGatewayAbstract implements sfPaymentTransactionGatewayInterface
   {
 
     /**
      * @var array
      */
     protected $_acceptedCurrencies;
+
+    /**
+     * @var boolean
+     */
+    protected $_enabled;
 
     /**
      * Check if the gateway accepts a specific currency.
@@ -26,6 +31,16 @@
     public function canAcceptCurrency ($arg_currency)
     {
       return in_array($arg_currency, $this->_acceptedCurrencies);
+    }
+
+    /**
+     * Check if the gateway is enabled.
+     *
+     * @return  boolean
+     */
+    public function isEnabled ()
+    {
+      return $this->_enabled;
     }
 
     /**

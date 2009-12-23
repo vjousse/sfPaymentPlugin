@@ -8,7 +8,7 @@
    *
    * @version   $Revision$ changed by $Author$
    */
-  interface sfTransactionGatewayInterface
+  interface sfPaymentTransactionGatewayInterface
   {
 
     /**
@@ -32,7 +32,7 @@
      *
      * @return  void
      */
-    function request (sfTransactionInterface $arg_transaction);
+    function request (sfPaymentTransactionInterface $arg_transaction);
 
     /**
      * Process the transaction.
@@ -42,5 +42,12 @@
      * @return  void
      */
     function process ();
+
+    /**
+     * Check if the gateway is enabled.
+     *
+     * @return  boolean
+     */
+    function isEnabled ();
 
   }
