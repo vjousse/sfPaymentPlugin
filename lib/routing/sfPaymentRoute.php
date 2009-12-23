@@ -24,7 +24,7 @@
                                        ,'transaction_id' => "\d+"
                                        )
                                  ,$requirements);
-      $options      = array_merge(array('model' => 'sfTransaction')
+      $options      = array_merge(array('model' => 'sfPaymentTransaction')
                                  ,$options
                                  ,array('type'   => 'object'
                                        ,'method' => 'getById'

@@ -127,7 +127,7 @@
      *
      * @return  DomDocument
      */
-    function toXml ();
+    function toXmlElement ();
 
     /**
      * Create an object from an XML data source.
@@ -136,6 +136,6 @@
      *
      * @return  void
      */
-    function fromXml ($arg_xml);
+    function fromXmlElement (SimpleXMLElement $arg_xmlElement);
 
   }
