@@ -49,6 +49,7 @@
       $this->widgetSchema = new sfWidgetFormSchema(array('transaction_id' => new sfWidgetFormInputHidden()
                                                         ,'gateway'        => new sfWidgetFormChoice(array('choices' => $this->_gateways))
                                                         ,'selection'      => new sfWidgetFormChoice(array('expanded' => TRUE
+                                                                                                         ,'multiple' => TRUE
                                                                                                          ,'choices'  => NULL))
                                                         ));
 
@@ -96,10 +97,14 @@
      */
     public function updateFormDefaults ()
     {
+      $defaults = array();
+
       if ($this->hasBasket())
       {
-        $this->_updateChoiceField($this->widgetSchema['selection'], $this->getBasket()->toArray());
+        $defaults['selection'] = $this->_updateChoiceField($this->widgetSchema['selection'], $this->getBasket()->toArray());
       }
+
+      $this->setDefaults($defaults);
 
       return $this;
     }
@@ -112,6 +117,8 @@
     private function _updateChoiceField (sfWidgetFormChoice $arg_widget, array $arg_options)
     {
       $arg_widget->setOption('choices', $arg_options);
+
+      return array_keys($arg_options);
     }
 
     /**
