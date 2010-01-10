@@ -12,36 +12,36 @@
   {
 
     /**
-     * @const string  The string that indicates that a transaction has been
-     *                aprroved.
+     * @var string  The string that indicates that a transaction has been
+     *              aprroved
      */
     const STATUS_APPROVED = 'approved';
 
     /**
-     * @const string  The string that indicates that a transaction has been
-     *                declined.
+     * @var string  The string that indicates that a transaction has been
+     *              declined
      */
     const STATUS_DECLINED = 'declined';
 
     /**
-     * @const string  The string that indicates that a transaction has been
-     *                requested but that a response is pending.
+     * @var string  The string that indicates that a transaction has been
+     *              requested but that a response is pending
      */
     const STATUS_PENDING = 'pending';
 
     /**
-     * @const string  The string that indicates that the transaction has not yet
-     *                requested.
+     * @var string  The string that indicates that the transaction has not yet
+     *              requested
      */
     const STATUS_UNKNOWN = 'unknown';
 
     /**
-     * @const string  The euro currency.
+     * @var string  The euro currency
      */
     const CURRENCY_EURO = 'EUR';
 
     /**
-     * @const string  The US dollar currency.
+     * @var string  The US dollar currency
      */
     const CURRENCY_UNITED_STATES_DOLLAR = 'USD';
 
