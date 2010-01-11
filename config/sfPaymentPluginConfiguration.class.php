@@ -33,9 +33,31 @@
       }
 
       $this->dispatcher->connect('component.method_not_found', array($this, 'onComponentMethodNotFound'));
+      $this->dispatcher->connect('user.method_not_found', array($this, 'onUserMethodNotFound'));
       $this->dispatcher->connect('transaction.prepare', array($this, 'onTransactionPrepare'));
       $this->dispatcher->connect('transaction.request', array($this, 'onTransactionRequest'));
       $this->dispatcher->connect('transaction.process', array($this, 'onTransactionProcess'));
+    }
+
+    /**
+     * Hook for the user.method_not_found event.
+     *
+     * @param   sfEvent $arg_event  The event that caused invocation of the hook.
+     *
+     * @return  boolean             Indicator whether a hook was found or not.
+     */
+    public function onUserMethodNotFound (sfEvent $arg_event)
+    {
+      $result = FALSE;
+
+      if ('getBasket' === $arg_event['method'])
+      {
+        $arg_event->setReturnValue($this->getServiceContainer()->getService('payment.basket'));
+
+        $result = TRUE;
+      }
+
+      return $result;
     }
 
     /**
