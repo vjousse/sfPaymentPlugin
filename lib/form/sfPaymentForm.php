@@ -10,4 +10,15 @@
    */
   class sfPaymentForm extends sfPaymentFormAbstract
   {
+
+    /**
+     * Process the payment selection.
+     *
+     * @return  sfPaymentTransactionInterface
+     */
+    public function process ()
+    {
+      throw new BadMethodCallException('Not yet implemented');
+    }
+
   }

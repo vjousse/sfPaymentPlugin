@@ -65,6 +65,13 @@
     }
 
     /**
+     * Process the form.
+     *
+     * @return  sfPaymentTransactionInterface
+     */
+    abstract public function process ();
+
+    /**
      * {@inheritdoc}
      *
      * @throws  BadMethodCallException  If no transaction was set for the form.
