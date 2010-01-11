@@ -27,11 +27,6 @@
     private $_basket;
 
     /**
-     * @var string  The currency of the bundled sellables.
-     */
-    private $_currency;
-
-    /**
      * Payment form constructor.
      *
      * @param   array                     $arg_gateways     The available gateways.
@@ -110,23 +105,14 @@
     }
 
     /**
-     * Update a choice field.
-     *
-     * @return
-     */
-    private function _updateChoiceField (sfWidgetFormChoice $arg_widget, array $arg_options)
-    {
-      $arg_widget->setOption('choices', $arg_options);
-
-      return array_keys($arg_options);
-    }
-
-    /**
      * Set the transaction object.
      *
-     * @param   sfTransactionInterface  $arg_transaction  The transaction object to use.
+     * @param   sfTransactionInterface  $arg_transaction  The transaction object
+     *                                                    to use
      *
-     * @return  sfPaymentFormAbstract                     The object itself to support a fluent interface.
+     * @return  sfPaymentFormAbstract                     The object itself to
+     *                                                    support a fluent
+     *                                                    interface
      */
     public function setTransaction (sfPaymentTransactionInterface $arg_transaction)
     {
@@ -212,6 +198,21 @@
     {
       return NULL !== $this->_basket;
     }
+
+    /**
+     * Update a choice field.
+     *
+     * @param   sfWidgetFormChoice  The widget to update
+     *
+     * @return  array               The keys of the fields that were added
+     */
+    private function _updateChoiceField (sfWidgetFormChoice $arg_widget, array $arg_choices)
+    {
+      $arg_widget->setOption('choices', $arg_choices);
+
+      return array_keys($arg_options);
+    }
+
 
     /**
      * Filter the gateways.
