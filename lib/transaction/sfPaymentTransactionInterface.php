@@ -36,16 +36,6 @@
     const STATUS_UNKNOWN = 'unknown';
 
     /**
-     * @var string  The euro currency
-     */
-    const CURRENCY_EURO = 'EUR';
-
-    /**
-     * @var string  The US dollar currency
-     */
-    const CURRENCY_UNITED_STATES_DOLLAR = 'USD';
-
-    /**
      * Set the transaction id.
      *
      * @param   string  $arg_transactionId  The transaction id.
@@ -125,14 +115,14 @@
     /**
      * Cast the object to an XML notation.
      *
-     * @return  DomDocument
+     * @return  SimpleXMLElement
      */
     function toXmlElement ();
 
     /**
      * Create an object from an XML data source.
      *
-     * @param   string  $arg_xml  The XML representation.
+     * @param   SimpleXMLElement  $arg_xml  The XML representation.
      *
      * @return  void
      */

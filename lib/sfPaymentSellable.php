@@ -12,6 +12,16 @@
   {
 
     /**
+     * @var string  The euro currency
+     */
+    const CURRENCY_EURO = 'EUR';
+
+    /**
+     * @var string  The US dollar currency
+     */
+    const CURRENCY_UNITED_STATES_DOLLAR = 'USD';
+
+    /**
      * Get the currency.
      *
      * @return  string
