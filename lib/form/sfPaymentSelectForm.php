@@ -12,13 +12,30 @@
   {
 
     /**
+     * Form setup.
+     *
+     * @return  void
+     */
+    public function setup ()
+    {
+      $this->widgetSchema   ['gateway'] = new sfWidgetFormChoice(array('choices' => $this->_gateways));;
+      $this->validatorSchema['gateway'] = new sfValidatorChoice(array('choices' => array_keys($this->_gateways)));
+    }
+
+    /**
      * Process the gateway selection.
      *
      * @return  sfPaymentTransactionInterface
      */
     public function process ()
     {
-      throw new BadMethodCallException('Not yet implemented');
+      if ( ! $this->isValid())
+      {
+        throw $this->errorSchema;
+      }
+
+      return $this->_gateways[$this->getValue('gateway')]
+                  ->getTransaction();
     }
 
   }
