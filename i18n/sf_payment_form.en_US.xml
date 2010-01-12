@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<xliff version="1.0">
+  <file original="global" source-language="en_US" datatype="plaintext">
+    <body>
+      <trans-unit>
+        <source>sfPaymentTransactionGatewayCreditCardPaypalPaymentsPro</source>
+        <target>Credit card</target>
+      </trans-unit>
+      <trans-unit>
+        <source>sfPaymentTransactionGatewayIdealMollieApi</source>
+        <target>iDEAL</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
