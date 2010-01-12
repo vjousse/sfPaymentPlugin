@@ -16,10 +16,10 @@
      *
      * @param   sfPaymentFormAbstract $arg_form     The form to process.
      * @param   sfWebRequest          $arg_request  The request object.
-     * @param   String                $arg_route    The route to which the form data should be submitted.
-     * @param   String                $arg_method   The form submit method.
+     * @param   mixed                 $arg_route    The route to which the form data should be submitted.
+     * @param   string                $arg_method   The form submit method.
      *                                
-     * @return  String                              The view type to render.
+     * @return  string                              The view type to render.
      */
     protected function _processForm (sfPaymentFormAbstract $arg_form, sfWebRequest $arg_request, $arg_route, $arg_method = 'post')
     {
@@ -31,9 +31,12 @@
 
         if ($arg_form->isValid())
         {
-          $this->redirect(array('sf_route'   => $arg_route
-                               ,'sf_subject' => $this->_doProcessForm($arg_form)
-                               ));
+          $object = $this->_doProcessForm($arg_form);
+          $route  = is_callable($arg_route) ? call_user_func($arg_route, $object) : array('sf_route'   => $arg_route
+                                                                                         ,'sf_subject' => $object
+                                                                                         );
+
+          $this->redirect($route);
         }
       }
 
