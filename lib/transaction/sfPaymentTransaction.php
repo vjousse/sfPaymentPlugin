@@ -221,7 +221,7 @@
     /**
      * Cast the object to an XML notation.
      *
-     * @return  DomDocument
+     * @return  SimpleXMLElement
      */
     public function toXmlElement ()
     {
