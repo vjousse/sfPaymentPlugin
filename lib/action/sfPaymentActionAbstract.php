@@ -22,7 +22,7 @@
      *                                
      * @return  string                              The view type to render
      */
-    protected function _processForm (sfPaymentFormAbstract $arg_form, sfWebRequest $arg_request, $arg_route, $arg_method = 'post')
+    protected function _processForm (sfForm $arg_form, sfWebRequest $arg_request, $arg_route, $arg_method = 'post')
     {
       $name = $arg_form->getName();
 
@@ -49,14 +49,14 @@
     /**
      * Process a form object when it is valid.
      *
-     * @param   sfForm        $arg_form     The form to process
-     * @param   sfWebRequest  $arg_request  The request object
-     * @param   String        $arg_route    The route to which the form data
-     *                                      should be submitted
+     * @param   sfPaymentFormAbstract $arg_form     The form to process
+     * @param   sfWebRequest          $arg_request  The request object
+     * @param   mixed                 $arg_route    The route to which the form
+     *                                              data should be submitted
      *
-     * @return  array                       Representing the routing data
+     * @return  array                               Representing the routing data
      */
-    protected function _doProcessForm (sfForm $arg_form, sfWebRequest $arg_request, $arg_route)
+    protected function _doProcessForm (sfPaymentFormAbstract $arg_form, sfWebRequest $arg_request, $arg_route)
     {
       return array('sf_route'   => $arg_route
                   ,'sf_subject' => $arg_form->save()
