@@ -6,7 +6,7 @@
    * @package   sfPaymentPlugin
    * @author    Marijn Huizendveld <marijn@round84.com>
    *
-   * @version   $Revision: 24815 $ changed by $Author: marijn $
+   * @version   $Revision$ changed by $Author$
    */
   class sfPaymentBasket implements sfPaymentBasketInterface
   {
