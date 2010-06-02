@@ -27,7 +27,7 @@
     {
       if ( ! class_exists('sfServiceContainerAutoloader', FALSE))
       {
-        require_once __DIR__ . '/../lib/vendor/Symfony/DependencyInjection/sfServiceContainerAutoloader.php';
+        require_once dirname(__FILE__) . '/../lib/vendor/symfony-components/DependencyInjection/sfServiceContainerAutoloader.php';
 
         sfServiceContainerAutoloader::register();
       }
